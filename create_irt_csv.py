@@ -14,7 +14,8 @@ from tqdm import tqdm
 import argparse
 import numpy as np
 
-BENCHMARK_NAME = "leaderboard_bbh_tracking_shuffled_objects_five_objects"
+# BENCHMARK_NAME = "leaderboard_bbh_tracking_shuffled_objects_five_objects"
+BENCHMARK_NAME = "leaderboard_mmlu_pro"
 def load_json_file(filename):
     """Load a JSON file and return the data."""
     with open(filename, 'r') as f:

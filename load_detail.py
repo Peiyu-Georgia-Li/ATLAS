@@ -5,7 +5,7 @@ dataset_path = f"open-llm-leaderboard/{model_name.replace('/', '__')}-details"
 
 data = load_dataset(
     dataset_path,
-    name=f"{model_name.replace('/', '__')}__leaderboard_mmlu_pro",
+    name=f"{model_name.replace('/', '__')}__leaderboard_bbh_tracking_shuffled_objects_five_objects",
     split="latest"
 )
 print(data)
