@@ -13,6 +13,8 @@ from datasets import load_dataset
 from tqdm import tqdm
 import argparse
 import numpy as np
+import shutil
+from datasets import config
 
 # BENCHMARK_NAME = "leaderboard_bbh_tracking_shuffled_objects_five_objects"
 BENCHMARK_NAME = "leaderboard_mmlu_pro"
@@ -20,6 +22,7 @@ def load_json_file(filename):
     """Load a JSON file and return the data."""
     with open(filename, 'r') as f:
         return json.load(f)
+
 
 def load_model_responses(model_name):
     """
@@ -62,19 +65,35 @@ def load_model_responses(model_name):
                 'doc_id': doc_id,
                 'acc_norm': acc
             })
+    
+    result_df = pd.DataFrame(items_data)
+    # Delete the Hugging Face dataset cache for this specific dataset
+    # try:
+    #     # Get the cache directory for this dataset
+    #     cache_dir = "~/.cache/huggingface/datasets"
+    #     if os.path.exists(cache_dir):
+    #         print(f"Deleting cache for {model_name}...")
+    #         shutil.rmtree(cache_dir, ignore_errors=True)
+    # except Exception as e:
+    #     print(f"Warning: Failed to delete cache for {model_name}: {str(e)}")
+    cache_dir = os.path.expanduser("~/.cache/huggingface/datasets")
+    cache_dir2 = os.path.expanduser("~/.cache/huggingface/hub")
+    shutil.rmtree(cache_dir, ignore_errors=True)
+    shutil.rmtree(cache_dir2, ignore_errors=True)
+    print(f"Deleting cache for {model_name}...")
+
             
-    return pd.DataFrame(items_data)
+    return result_df
     
 
 
-def create_response_matrix(models, output_file, dataset_path="open-llm-leaderboard"):
+def create_response_matrix(models, output_file):
     """
     Create a response matrix CSV file for IRT analysis.
     
     Args:
         models: List of model names
         output_file: Path to save the output CSV
-        dataset_path: Path to the dataset
     """
     # Dictionary to store responses for each model
     all_responses = {}
@@ -128,8 +147,8 @@ def main():
     parser = argparse.ArgumentParser(description="Create a response matrix for IRT analysis")
     parser.add_argument("--threshold", default="models_above_threshold.json", help="Models above threshold file")
     parser.add_argument("--output", default=f"{BENCHMARK_NAME}_response_matrix.csv", help="Output CSV file")
-    parser.add_argument("--dataset", default="open-llm-leaderboard", help="Dataset path")
     parser.add_argument("--limit", type=int, default=10, help="Limit number of models to process (for testing)")
+    parser.add_argument("--keep-cache", action="store_true", help="Keep Hugging Face cache after execution")
     args = parser.parse_args()
     
     # Load threshold models
@@ -170,7 +189,9 @@ def main():
         model_names = model_names[:args.limit]
     
     # Create response matrix
-    response_matrix = create_response_matrix(model_names, args.output, args.dataset)
+    response_matrix = create_response_matrix(model_names, args.output)
+
+
 
 if __name__ == "__main__":
     main()

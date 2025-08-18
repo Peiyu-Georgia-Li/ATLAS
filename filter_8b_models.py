@@ -29,7 +29,7 @@ def filter_8b_models(csv_path, output_path=None):
         raise ValueError("CSV file does not contain a 'model' column")
     
     # Filter rows where model name contains '8b' or '8B'
-    filtered_df = df[df['model'].str.contains('8[bB]', regex=True)]
+    filtered_df = df[df['model'].str.contains('13[bB]', regex=True)]
     
     # Save to file if output_path is provided
     if output_path:
