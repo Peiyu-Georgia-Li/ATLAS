@@ -23,13 +23,14 @@ def filter_8b_models(csv_path, output_path=None):
         df = pd.read_csv(csv_path)
     except Exception as e:
         raise Exception(f"Error reading CSV file: {e}")
-    
+
+    print(df.head())        
     # Check if 'model' column exists
     if 'model' not in df.columns:
         raise ValueError("CSV file does not contain a 'model' column")
     
     # Filter rows where model name contains '8b' or '8B'
-    filtered_df = df[df['model'].str.contains('13[bB]', regex=True)]
+    filtered_df = df[df['model'].str.contains('8[bB]', regex=True)]
     
     # Save to file if output_path is provided
     if output_path:

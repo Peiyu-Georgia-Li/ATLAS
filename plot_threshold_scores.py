@@ -16,6 +16,9 @@ def load_json_file(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
 
+    
+    
+
 def extract_threshold_model_scores(threshold_models, leaderboard_data):
     """Extract average scores for models in threshold list."""
     # Create set of model names from threshold models for faster lookup
@@ -61,6 +64,10 @@ def plot_score_distribution(scores, output_file=None):
     # Fit a normal distribution to the data
     mu, sigma = stats.norm.fit(scores)
     
+    # Calculate skewness and kurtosis
+    skewness = stats.skew(scores)
+    kurtosis = stats.kurtosis(scores)
+    
     # Plot the PDF (probability density function)
     x = np.linspace(min(scores), max(scores), 100)
     pdf = stats.norm.pdf(x, mu, sigma)
@@ -70,7 +77,7 @@ def plot_score_distribution(scores, output_file=None):
     ks_statistic, p_value = stats.kstest(scores, 'norm', args=(mu, sigma))
     
     # Add title and labels
-    plt.title(f'Distribution of Average Scores for Models Above Threshold\nKS test: statistic={ks_statistic:.4f}, p-value={p_value:.4f}', 
+    plt.title(f'Distribution of Average Scores for 8B Models\nKS test: statistic={ks_statistic:.4f}, p-value={p_value:.4f}', 
              fontsize=14)
     plt.xlabel('Average Score', fontsize=12)
     plt.ylabel('Density', fontsize=12)
@@ -88,6 +95,15 @@ def plot_score_distribution(scores, output_file=None):
     plt.annotate(stats_text, xy=(0.02, 0.98), xycoords='axes fraction',
                 fontsize=10, verticalalignment='top',
                 bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    
+    # Add skewness and kurtosis information
+    skew_kurt_text = f'Skewness: {skewness:.4f}\n'
+    skew_kurt_text += f'Kurtosis: {kurtosis:.4f}\n'
+    skew_kurt_text += f'(For a perfect Gaussian: Skewness=0, Kurtosis=0)'
+    
+    plt.annotate(skew_kurt_text, xy=(0.98, 0.98), xycoords='axes fraction',
+                fontsize=10, verticalalignment='top', horizontalalignment='right',
+                bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.8))
     
     # Add interpretation of Gaussian fit
     if p_value < 0.05:
@@ -144,5 +160,81 @@ def main():
     print(f"Distribution Kurtosis: {kurtosis:.4f}")
     print("(For a perfect Gaussian: Skewness=0, Kurtosis=0)")
 
+
+def calculate_average_score(csv_file_path):
+    """
+    Calculate the average score for each model in the CSV file.
+    
+    Args:
+        csv_file_path (str): Path to the CSV file containing model scores
+        
+    Returns:
+        dict: Dictionary with model names as keys and their average scores as values
+    """
+    import csv
+    import os
+    
+    # Check if file exists
+    if not os.path.exists(csv_file_path):
+        raise FileNotFoundError(f"CSV file not found: {csv_file_path}")
+    
+    # Calculate average score for each model
+    results = {}
+    
+    # Read the CSV file
+    with open(csv_file_path, 'r', newline='') as csvfile:
+        csv_reader = csv.reader(csvfile)
+        
+        # Read header row
+        header = next(csv_reader)
+        
+        # Process each row (model)
+        for row in csv_reader:
+            if not row:  # Skip empty rows
+                continue
+                
+            model_name = row[0]  # First column is the model name
+            
+            # Calculate average by taking mean of all score columns (columns 1 to end)
+            scores = [int(score) for score in row[1:] if score.strip()]  # Convert to integers
+            
+            if scores:  # Check if there are any scores
+                average_score = sum(scores) / len(scores)
+                # Store result
+                results[model_name] = average_score
+    
+    return results
+
+def plot():
+    """
+    Plot the distribution of average scores from the cleaned_8b_model.csv file
+    """
+    parser = argparse.ArgumentParser(description="Plot distribution of average scores for 8B models and compare with Gaussian.")
+    parser.add_argument("--csv", default="/Users/lipeiyu/llmbenchmark/cleaned_8b_model_train.csv", help="Path to CSV file with model scores")
+    parser.add_argument("--output", default="8b_scores_distribution_train.png", help="Output image file")
+    args = parser.parse_args()
+    
+    # Calculate average scores from CSV
+    print(f"Calculating average scores from {args.csv}...")
+    average_scores = calculate_average_score(args.csv)
+    
+    # Convert dictionary values to a numpy array for plotting
+    scores_array = np.array(list(average_scores.values()))
+    
+    print(f"Found {len(scores_array)} models with valid scores.")
+    print(f"Score range: {np.min(scores_array):.4f} to {np.max(scores_array):.4f}")
+    print(f"Mean score: {np.mean(scores_array):.4f}")
+    
+    # Plot the distribution
+    print("Generating plot...")
+    plot_score_distribution(scores_array, args.output)
+    
+    # Additional analysis: skewness and kurtosis
+    skewness = stats.skew(scores_array)
+    kurtosis = stats.kurtosis(scores_array)
+    print(f"Distribution Skewness: {skewness:.4f}")
+    print(f"Distribution Kurtosis: {kurtosis:.4f}")
+    print("(For a perfect Gaussian: Skewness=0, Kurtosis=0)")
+    
 if __name__ == "__main__":
-    main()
+    plot()

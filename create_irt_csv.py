@@ -56,6 +56,7 @@ def load_model_responses(model_name):
     for item in data:
         # Extract item ID (document ID)
         doc_id = item.get('doc_id', None)
+
         
         # Extract accuracy (0 or 1)
         acc = item.get('acc_norm', item.get('acc', None))
@@ -63,6 +64,7 @@ def load_model_responses(model_name):
         if doc_id is not None and acc is not None:
             items_data.append({
                 'doc_id': doc_id,
+                'category': category,
                 'acc_norm': acc
             })
     
@@ -82,7 +84,7 @@ def load_model_responses(model_name):
     shutil.rmtree(cache_dir2, ignore_errors=True)
     print(f"Deleting cache for {model_name}...")
 
-            
+    
     return result_df
     
 
