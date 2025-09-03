@@ -9,8 +9,8 @@ index_name <- args[1]
 i <- as.numeric(args[1])
 print(i)
 
-data <- read.csv("mmlu_pro/leaderboard_mmlu_pro_response_matrix_math.csv")
-
+#data <- read.csv("mmlu_pro/leaderboard_mmlu_pro_response_matrix_math.csv")
+data <- read.csv("8b_leaderboard_mmlu_pro_response_matrix_math.csv")
 # Get dimensions of the original data
 cat("Dimensions of origial data:", dim(data), "\n")
 
@@ -30,8 +30,8 @@ cat("Dropped", sum(constant_rows), "constant rows.\n")
 # Get dimensions of the cleaned data
 cat("Dimensions of cleaned data:", dim(clean_data), "\n")
 
-dat<-clean_data[, (i-112):i]
-#dat<-clean_data[, 2:101]
+#dat<-clean_data[, (i-112):i]
+dat<-clean_data[, 341:453]
 
 #head(dat)
 model <- mirt(dat, model = 1, method="EM", itemtype = "3PL", technical = list(NCYCLES = 100000))
@@ -84,7 +84,7 @@ item_params <- coef(model, simplify = TRUE)$items
 print(item_params)
 
 # # Save results to files
-path <- "mmlu_math_113/"
+path <- "mmlu_math_113_8b/"
 if (!dir.exists(path)) dir.create(path)
 
 output_params_file <- paste0(path,"irt_item_parameters_", index_name, ".csv")

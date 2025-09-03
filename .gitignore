@@ -4,3 +4,7 @@ resume_state.json
 irt_item_fit_leaderboard_bbh_tracking_shuffled_objects_five_objects.csv
 irt_model_fit_leaderboard_bbh_tracking_shuffled_objects_five_objects.csv
 leaderboard_mmlu_pro_response_matrix.csv
+irt_person_scores_113_8b.csv
+irt_person_scores_113_8b_math.csv
+irt_person_scores_113_8b_math_MAP.csv
+mmlu_math_113/
