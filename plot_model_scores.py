@@ -117,7 +117,7 @@ def plot_score_distribution(scores, output_file=None):
 
 def main():
     parser = argparse.ArgumentParser(description='Draw the plot (average score)')
-    parser.add_argument('--csv_path', help='Path to the input CSV file', default="/Users/lipeiyu/llmbenchmark/cleaned_8b_model.csv")
+    parser.add_argument('--csv_path', help='Path to the input CSV file', default="/Users/lipeiyu/llmbenchmark/plo.csv")
     parser.add_argument('--plotname', '-o', help='Path to save the plot', default="model_scores_distribution.png")
     args = parser.parse_args()
     # Path to the CSV file

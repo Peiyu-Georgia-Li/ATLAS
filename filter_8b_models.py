@@ -5,7 +5,7 @@ import argparse
 
 def filter_8b_models(csv_path, output_path=None):
     """
-    Filter rows in a CSV file where the model name contains '8b' or '8B'.
+    Filter rows in a CSV file where the model name contains -8b, -8B, _8b, or _8B.
     
     Args:
         csv_path (str): Path to the input CSV file
@@ -29,8 +29,8 @@ def filter_8b_models(csv_path, output_path=None):
     if 'model' not in df.columns:
         raise ValueError("CSV file does not contain a 'model' column")
     
-    # Filter rows where model name contains '8b' or '8B'
-    filtered_df = df[df['model'].str.contains('8[bB]', regex=True)]
+    # Filter rows where model name contains -8b, -8B, _8b, or _8B
+    filtered_df = df[df['model'].str.contains('[-_]8[bB]', regex=True)]
     
     # Save to file if output_path is provided
     if output_path:
