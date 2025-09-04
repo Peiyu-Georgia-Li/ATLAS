@@ -51,6 +51,32 @@ def calculate_average_score(csv_file_path):
     
     return results
 
+def write_csv(average_scores, output_file):
+    """
+    Write average scores to a CSV file.
+    
+    Args:
+        average_scores (dict): Dictionary with model names as keys and their average scores as values
+        output_file (str): Path to save the plot image (will be modified to save CSV)
+    """
+    # Create CSV filename by replacing the image extension with .csv
+    csv_output = os.path.splitext(output_file)[0] + '_average_scores.csv'
+    
+    print(f"Saving average scores to {csv_output}...")
+    
+    # Write the data to CSV
+    with open(csv_output, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        
+        # Write header
+        csv_writer.writerow(['Model', 'Average Score'])
+        
+        # Write data rows sorted by model name
+        for model_name, score in sorted(average_scores.items()):
+            csv_writer.writerow([model_name, f"{score:.6f}"])
+    
+    print(f"Average scores saved to {csv_output}")
+
 def plot_score_distribution(scores, output_file=None):
     """Plot histogram of scores and compare with Gaussian."""
     plt.figure(figsize=(12, 8))
@@ -127,6 +153,7 @@ def main():
     # Calculate average scores
     print(f"Calculating average scores from {os.path.basename(csv_file_path)}...")
     average_scores = calculate_average_score(csv_file_path)
+    write_csv(average_scores, output_file)
     
     # Convert dictionary values to a numpy array for plotting
     scores_array = np.array(list(average_scores.values()))

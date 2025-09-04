@@ -24,7 +24,7 @@ def filter_8b_models(input_file, output_file, print_removed=False):
     
     # Filter to keep only rows with -8b, -8B, _8b, or _8B in the model name
     # This effectively removes models with 78b
-    pattern = r'[-_]8[bB]'
+    pattern = r'[-_x]8[bB]'
     filtered_df = df[df[model_col].str.contains(pattern, regex=True)]
     
     # Get the removed rows
