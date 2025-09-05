@@ -41,13 +41,23 @@ def calculate_average_score(csv_file_path):
                 
             model_name = row[0]  # First column is the model name
             
+            # Skip rows that are likely headers or metadata
+            if 'Unnamed' in model_name or model_name.lower() in ['model', 'index']:
+                print(f"Skipping likely header row: {model_name}")
+                continue
+                
             # Calculate average by taking mean of all score columns (columns 1 to end)
-            scores = [float(score) for score in row[1:] if score.strip()]  # Convert to floats
-            
-            if scores:  # Check if there are any scores
-                average_score = sum(scores) / len(scores)
-                # Store result
-                results[model_name] = average_score
+            try:
+                scores = [float(score) for score in row[1:] if score.strip()]  # Convert to floats
+                
+                if scores:  # Check if there are any scores
+                    average_score = sum(scores) / len(scores)
+                    # average_score = sum(scores)##⚠️
+                    # Store result
+                    results[model_name] = average_score
+            except ValueError:
+                print(f"Skipping row with non-numeric values: {model_name}")
+                continue
     
     return results
 
@@ -60,7 +70,7 @@ def write_csv(average_scores, output_file):
         output_file (str): Path to save the plot image (will be modified to save CSV)
     """
     # Create CSV filename by replacing the image extension with .csv
-    csv_output = os.path.splitext(output_file)[0] + '_average_scores.csv'
+    csv_output = os.path.splitext(output_file)[0] + '_scores.csv'
     
     print(f"Saving average scores to {csv_output}...")
     
@@ -69,11 +79,15 @@ def write_csv(average_scores, output_file):
         csv_writer = csv.writer(csvfile)
         
         # Write header
-        csv_writer.writerow(['Model', 'Average Score'])
+        csv_writer.writerow(['Model', 'Score'])
         
-        # Write data rows sorted by model name
+        # Write data rows sorted by model name, excluding any rows that look like headers
         for model_name, score in sorted(average_scores.items()):
-            csv_writer.writerow([model_name, f"{score:.6f}"])
+            # Skip rows that are likely headers or metadata (like 'Unnamed: 0')
+            if 'Unnamed' in model_name or model_name.lower() in ['model', 'index']:
+                print(f"Skipping likely header row: {model_name}")
+                continue
+            csv_writer.writerow([model_name, score])
     
     print(f"Average scores saved to {csv_output}")
 
@@ -97,12 +111,12 @@ def plot_score_distribution(scores, output_file=None):
     ks_statistic, p_value = stats.kstest(scores, 'norm', args=(mu, sigma))
     
     # Add title and labels
-    plt.title(f'Distribution of Average Scores for 8B Models\nKS test: statistic={ks_statistic:.4f}, p-value={p_value:.4f}', 
+    plt.title(f'Distribution of Average Scores for Models\nKS test: statistic={ks_statistic:.4f}, p-value={p_value:.4f}', 
              fontsize=14)
     plt.xlabel('Average Score', fontsize=12)
     plt.ylabel('Density', fontsize=12)
     plt.grid(True, alpha=0.3)
-    plt.legend(fontsize=12)
+    plt.legend(fontsize=12, loc='upper left', bbox_to_anchor=(1.02, 1), borderaxespad=0)
     
     # Add text box with statistics
     # Calculate skewness and kurtosis
