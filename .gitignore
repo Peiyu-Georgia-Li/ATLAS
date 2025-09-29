@@ -58,3 +58,4 @@ data/
 !*/irt_item_parameters_combined.csv
 !*/irt_person_scores_WLE_SE.csv
 
+select_model/gaussian*
