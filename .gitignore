@@ -52,6 +52,7 @@ data/
 */irt_person_scores*.csv
 */*.o*
 */*/item_overlap_matrix*
+*/item_selection*
 
 # But keep the combined one
 !*/m2_combined.csv
