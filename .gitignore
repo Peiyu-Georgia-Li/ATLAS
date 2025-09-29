@@ -60,3 +60,9 @@ data/
 !*/irt_person_scores_WLE_SE.csv
 
 select_model/gaussian*
+
+
+.Rapp.history
+.RData
+.Rhistory
+
