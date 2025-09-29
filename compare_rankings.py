@@ -165,7 +165,6 @@ def main():
     # Create a new figure and adjust spacing at the top
     fig, axes = plt.subplots(1, 2, figsize=(30, 16))
     plt.subplots_adjust(top=0.70)  # Much more space at top
-    
     # Add overall title with large font and ample top margin
     # fig.suptitle(dataset_title, fontsize=80, fontweight='bold', y=0.85)
     
@@ -178,10 +177,10 @@ def main():
     # No outlier highlighting
     
     # More mathematical subtitle using LaTeX
-    # axes[0].set_title(r'Whole-bank Ability vs. Average Score', fontsize=40)
-    # axes[0].set_xlabel('Average Score', fontsize=40)
-    # axes[0].set_ylabel(r'Whole-bank Ability', fontsize=40)
-    axes[0].tick_params(axis='both', which='major', labelsize=40)
+    axes[0].set_title(r'Whole-bank Ability vs. Average Score', fontsize=50)
+    axes[0].set_xlabel('Average Score', fontsize=50)
+    axes[0].set_ylabel(r'Whole-bank Ability', fontsize=50)
+    axes[0].tick_params(axis='both', which='major', labelsize=50)
     axes[0].grid(True, linestyle='--', alpha=1)
     print("⚠️", args.benchmark_name)
     # Set specific axis limits for arc benchmark
@@ -203,12 +202,18 @@ def main():
     max_rank = max(merged_df['Avg_Score_Rank'].max(), merged_df['Theta_Whole_Rank'].max())
     axes[1].plot([1, max_rank], [1, max_rank], color='red', linestyle='--', linewidth=1.5)
     
-    # More mathematical subtitle using LaTeX
-    # axes[1].set_title(r'$\mathrm{Rank}(\text{Whole-bank Ability})$ vs. $\mathrm{Rank}(\text{Average Score})$', fontsize=40)
-    # axes[1].set_xlabel('Average Score Rank (1 = best)', fontsize=40)
-    # axes[1].set_ylabel(r'Whole-bank Ability Rank (1 = best)', fontsize=40)
+    # More mathematical subtitle using LaTeX with two lines
+    axes[1].set_title(r'$\mathrm{Rank}(\text{Whole-bank Ability})$' + '\n' + r'vs. $\mathrm{Rank}(\text{Average Score})$', fontsize=40)
+    axes[1].set_xlabel('Average Score Rank (1 = best)', fontsize=40)
+    axes[1].set_ylabel(r'Whole-bank Ability Rank (1 = best)', fontsize=40)
     axes[1].tick_params(axis='both', which='major', labelsize=40)
     axes[1].grid(True, linestyle='--', alpha=0.7)
+    
+    # Add correlation values to the lower right corner of the rank comparison plot with larger font
+    axes[1].text(0.95, 0.15, f'Spearman Corr: {spearman_corr:.2f}', transform=axes[1].transAxes, 
+               ha='right', va='center', fontsize=50)
+    axes[1].text(0.95, 0.07, f'Kendall Corr: {kendall_corr:.2f}', transform=axes[1].transAxes, 
+               ha='right', va='center', fontsize=50)
     
     # Standardize tick density for better visual balance
     # Get current y-axis limits
@@ -252,10 +257,11 @@ def main():
     axes[1].xaxis.set_major_locator(FixedLocator(x_ticks))
     axes[1].yaxis.set_major_locator(FixedLocator(y_ticks))
     
-    # Adjust layout and save the combined figure
+    # Adjust layout and save the combined figure in both PNG and PDF formats
     plt.tight_layout(rect=[0, 0, 1, 0.95])  # Make room for the suptitle
     plt.savefig(f'{args.benchmark_name}/combined_comparison.png', dpi=300)
-    print(f"\nCombined plot saved as '{args.benchmark_name}/combined_comparison.png'")
+    plt.savefig(f'{args.benchmark_name}/combined_comparison.pdf', format='pdf')
+    print(f"\nCombined plot saved as '{args.benchmark_name}/combined_comparison.png' and '{args.benchmark_name}/combined_comparison.pdf'")
     
     # Also save individual plots for backward compatibility
     # Score comparison plot
@@ -263,11 +269,11 @@ def main():
     plt.scatter(non_outliers['Average Score'], non_outliers['Theta_Whole'], color='#e8a81f', alpha=0.3, s=20)
     
     # No outlier highlighting in individual plot
-    # plt.title(r'Whole-bank Ability vs. Average Score', fontsize=14)
-    # plt.xlabel('Average Score', fontsize=14)
-    # plt.ylabel(r'Whole-bank Ability', fontsize=14)
-    plt.xticks(fontsize=35)
-    plt.yticks(fontsize=35)
+    plt.title(r'Whole-bank Ability vs. Average Score', fontsize=50)
+    plt.xlabel('Average Score', fontsize=50)
+    plt.ylabel(r'Whole-bank Ability', fontsize=50)
+    plt.xticks(fontsize=40)
+    plt.yticks(fontsize=40)
     plt.grid(True, linestyle='--', alpha=1)
     # plt.text(0.05, 0.95, f'Spearman Corr: {spearman_corr:.2f}', transform=plt.gca().transAxes, fontsize=14)
     # plt.text(0.05, 0.90, f'Kendall Corr: {kendall_corr:.2f}', transform=plt.gca().transAxes, fontsize=14)
@@ -282,6 +288,7 @@ def main():
     
     plt.tight_layout()
     plt.savefig(f'{args.benchmark_name}/scores_comparison.png')
+    plt.savefig(f'{args.benchmark_name}/scores_comparison.pdf', format='pdf')
     
     # Rank comparison plot
     plt.figure(figsize=(10, 8))
@@ -321,11 +328,11 @@ def main():
     # Set the ticks with 1 as first tick
     plt.gca().xaxis.set_major_locator(FixedLocator(x_ticks))
     plt.gca().yaxis.set_major_locator(FixedLocator(y_ticks))
-    # plt.title(r'$\mathrm{Rank}(\text{Whole-bank Ability})$ vs. $\mathrm{Rank}(\text{Average Score})$', fontsize=40)
-    # plt.xlabel('Average Score Rank (1 = best)', fontsize=40)
-    # plt.ylabel(r'$\mathrm{Rank}(\text{Whole-bank Ability})$', fontsize=40)
-    plt.xticks(fontsize=35)
-    plt.yticks(fontsize=35)
+    plt.title(r'$\mathrm{Rank}(\text{Whole-bank Ability})$' + '\n' + r'vs. $\mathrm{Rank}(\text{Average Score})$', fontsize=50)
+    plt.xlabel('Average Score Rank (1 = best)', fontsize=50)
+    plt.ylabel(r'$\mathrm{Rank}(\text{Whole-bank Ability})$', fontsize=50)
+    plt.xticks(fontsize=40)
+    plt.yticks(fontsize=40)
     plt.grid(True, linestyle='--', alpha=0.7)
     # plt.text(0.05, 0.95, f'Spearman Rank Corr: {spearman_rank_corr:.2f}', transform=plt.gca().transAxes, fontsize=40)
     # plt.text(0.05, 0.90, f'Kendall Rank Corr: {kendall_rank_corr:.2f}', transform=plt.gca().transAxes, fontsize=40)
@@ -334,7 +341,8 @@ def main():
     plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=6))
     plt.tight_layout()
     plt.savefig(f'{args.benchmark_name}/rank_comparison.png')
-    print(f"Individual plots also saved as '{args.benchmark_name}/scores_comparison.png' and '{args.benchmark_name}/rank_comparison.png'")
+    plt.savefig(f'{args.benchmark_name}/rank_comparison.pdf', format='pdf')
+    print(f"Individual plots also saved as PNG and PDF in the '{args.benchmark_name}' directory")
     print(f"\nOutliers saved as '{args.benchmark_name}/outliers.csv'")
     print(f"\nGood models saved as '{args.benchmark_name}/good_models.csv'")
 
