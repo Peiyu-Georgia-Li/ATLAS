@@ -1,16 +1,15 @@
 # BENCHMARK<-"mmlu"
 # BENCHMARK<-"truthfulqa"
 # BENCHMARK<-"winogrande"
-# BENCHMARK<-"hellaswag"
-BENCHMARK<-"gpqa"
+BENCHMARK<-"hellaswag"
+
 # Load the RDS data
-# df <- readRDS(paste0("/store01/nchawla/pli9/llmbenchmark/metabench_data/benchmark-data/", BENCHMARK, "-preproc.rds"))
-df <- readRDS('/store01/nchawla/pli9/llmbenchmark/gpqa-preproc.rds')
+df <- readRDS(paste0("/store01/nchawla/pli9/llmbenchmark/metabench_data/benchmark-data/", BENCHMARK, "-preproc.rds"))
+
 # Read the gaussian sampled models
-# gaussian_models <- read.csv(paste0("/store01/nchawla/pli9/metabench/scraping/gaussian_sampled_", BENCHMARK, "_models.csv"))
+gaussian_models <- read.csv(paste0("/store01/nchawla/pli9/metabench/scraping/gaussian_sampled_", BENCHMARK, "_models.csv"))
 # gaussian_models <- read.csv("/store01/nchawla/pli9/metabench/scraping/gsm8k_models_filtered_300.csv")
 
-gaussian_models <- read.csv("/store01/nchawla/pli9/llmbenchmark/leaderboard_gpqa_main_response_matrix.csv")
 
 # Get the model names from the gaussian sampled models file
 model_names <- gaussian_models$model_name

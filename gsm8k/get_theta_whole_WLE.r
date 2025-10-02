@@ -2,24 +2,7 @@ library(mirt)
 ################
 # CLEAN DATA
 ###############
-data<-read.csv("/store01/nchawla/pli9/llmbenchmark/select_model/gaussian_sampled_gsm8k_response_matrix.csv")#⚠️
-
-
-# Get dimensions of the original data
-cat("Dimensions of origial data:", dim(data), "\n")
-
-data_clean <- na.omit(data)              # remove NA rows
-data_clean <- data_clean[, colSums(is.na(data_clean)) == 0]  # remove NA columns
-
-# Drop constant columns (no variance)
-constant_cols <- apply(data, 2, function(x) length(unique(x)) == 1)
-clean_data <- data[, !constant_cols]
-cat("Dropped", sum(constant_cols), "constant columns.\n")
-
-# Optionally drop constant rows
-constant_rows <- apply(clean_data, 1, function(x) length(unique(x)) == 1)
-clean_data <- clean_data[!constant_rows, ]
-cat("Dropped", sum(constant_rows), "constant rows.\n")
+clean_data<-read.csv("../data/clean_response_matrix_gsm8k.csv")
 
 # Get dimensions of the cleaned data
 cat("Dimensions of cleaned data:", dim(clean_data), "\n")
@@ -29,8 +12,7 @@ data_for_id <- clean_data
 ######################
 # IMPLEMENT MEAN/SIGMA LINKING
 ######################
-# Define chunk sizes based on irt_winogrande.r
-chunk_indices <- c(seq(110, 1200, 109), 1307)#⚠️(seq 106 105 737) 842 for i in $(seq 110 109 1200) 1307; do
+chunk_indices <- c(seq(110, 1200, 109), 1307)#⚠️
 # Load person scores for each subset
 scores_list <- lapply(chunk_indices, function(i) {
   # Read scores and ensure they're numeric
@@ -97,7 +79,6 @@ item_params_combined <- do.call(rbind, linked_params_list)
 
 # Load original parameters for comparison (if needed)
 params_list <- lapply(chunk_indices, function(i) read.csv(paste0("irt_item_parameters_", i, ".csv")))
-# Using chunk indices: 105, 209, 313, 417, 521, 626, 731, 836, 941, 1046
 
 # Save combined parameters
 write.csv(item_params_combined, "irt_item_parameters_combined.csv", row.names = FALSE)

@@ -2,33 +2,12 @@ library(mirt)
 ################
 # CLEAN DATA
 ###############
-data<-read.csv("/store01/nchawla/pli9/llmbenchmark/select_model/gaussian_sampled_winogrande_response_matrix_train.csv")
-
-
-# Get dimensions of the original data
-cat("Dimensions of origial data:", dim(data), "\n")
-
-data_clean <- na.omit(data)              # remove NA rows
-data_clean <- data_clean[, colSums(is.na(data_clean)) == 0]  # remove NA columns
-
-# Drop constant columns (no variance)
-constant_cols <- apply(data, 2, function(x) length(unique(x)) == 1)
-clean_data <- data[, !constant_cols]
-cat("Dropped", sum(constant_cols), "constant columns.\n")
-
-# Optionally drop constant rows
-constant_rows <- apply(clean_data, 1, function(x) length(unique(x)) == 1)
-clean_data <- clean_data[!constant_rows, ]
-cat("Dropped", sum(constant_rows), "constant rows.\n")
+clean_data<-read.csv("../data/clean_response_matrix_winogrande.csv")
 
 # Get dimensions of the cleaned data
 cat("Dimensions of cleaned data:", dim(clean_data), "\n")
 data_for_id <- clean_data
 
-#######################
-# GET ITEM PARAMS AND COMBINE THEM 
-######################
-# params_list <- lapply(c(seq(114, 1244, 113), 1349), function(i) read.csv(paste0("mmlu_math_113_8b/irt_item_parameters_", i, ".csv")))
 ######################
 # IMPLEMENT MEAN/SIGMA LINKING
 ######################
@@ -153,35 +132,6 @@ clean_params <- data.frame(
   row.names = param_items
 )
 
-# Use a different strategy if mapping fails
-if (length(param_to_data_map) == 0) {
-  # Try a numeric approach - the item numbers might be the same but format differs
-  # Extract numeric portion from parameter names
-  param_nums <- as.numeric(gsub("[^0-9]", "", param_items))
-  
-  # Extract numeric portion from data column names
-  data_cols <- colnames(clean_data)
-  data_nums <- as.numeric(gsub("[^0-9]", "", data_cols))
-  
-  # Find common numbers
-  common_nums <- intersect(param_nums, data_nums)
-  print(paste("Common numeric IDs:", length(common_nums)))
-  
-  # Create mapping based on numeric IDs
-  param_to_data_map <- list()
-  for (num in common_nums) {
-    param_idx <- which(param_nums == num)[1]
-    data_idx <- which(data_nums == num)[1]
-    if (!is.na(param_idx) && !is.na(data_idx)) {
-      param_item <- param_items[param_idx]
-      data_col <- data_cols[data_idx]
-      param_to_data_map[[param_item]] <- data_col
-    }
-  }
-  
-  print(paste("Number of mapped parameters after numeric matching:", length(param_to_data_map)))
-}
-
 #########################################################
 # Print parameter summary
 cat("Number of items with parameters:", nrow(clean_params), "\n")
@@ -192,12 +142,6 @@ cat("Number of data columns with parameters:", length(mapped_data_cols), "\n")
 
 # Filter data to keep only columns that have parameters
 clean_data <- clean_data[, mapped_data_cols, drop=FALSE]
-# # Create a renaming vector to align data column names with parameter names
-# renaming <- names(param_to_data_map)
-# names(renaming) <- unlist(param_to_data_map)
-
-# # Rename data columns to match parameter row names
-# colnames(clean_data) <- renaming[colnames(clean_data)]
 
 # Fit dummy model just to get structure
 mod_dummy <- mirt(clean_data, 1, itemtype = "3PL", pars = 'values')
