@@ -1,4 +1,4 @@
-# usage: Rscript atlas_random.r --se_theta_stop=0.1 
+# usage: Rscript atlas_random.r --se_theta_stop=0.1 --test_length=100 (if test_length is not specified, it will run on all models)
 # Install and Load Required Packages
 
 if (!require(catR)) install.packages("catR")
@@ -26,7 +26,7 @@ if (!is.null(.cli_args$se_theta_stop) && !is.na(.cli_args$se_theta_stop)) {
 
 # Prepare item bank
 # Read and prepare item bank
-DIRECTORY <- "atlas_hellaswag_random/"
+DIRECTORY <- "atlas_winogrande_random_test/"
 FILE_PATH <- "irt_item_parameters_combined.csv"
 prepare_item_bank <- function(file_path) {
   # Read your CSV
@@ -266,7 +266,7 @@ head(item_data$item_bank)
 dim(item_data$item_bank)
 ###########################################
 # CLEAN RESPONSE MATRIX
-clean_data <- read.csv("../data/clean_response_matrix_hellaswag.csv")
+clean_data <- read.csv("../data/clean_response_matrix_winogrande.csv")
 
 ###########################################
 # GET MODEL
@@ -348,87 +348,6 @@ theta_df <- data.frame(Model_Name = model_names, Theta_ATLAS = unlist(theta_atla
 output_file <- paste0(DIRECTORY, "irt_person_scores_ATLAS_", se_theta_stop, ".csv")#⚠️
 write.csv(theta_df, output_file, row.names = FALSE)
 print(paste("Saved person scores to", output_file))
-###########################################
-# Calculate and report test overlap rate
-###########################################
-
-# Function to calculate test overlap rate between two item sets
-calculate_overlap_rate <- function(items1, items2) {
-  # Find common items
-  common_items <- intersect(items1, items2)
-  
-  # Calculate overlap rate (percentage of items in common)
-  overlap_rate <- length(common_items) / max(length(items1), length(items2))
-  
-  return(list(
-    overlap_rate = overlap_rate,
-    common_items = common_items,
-    n_common = length(common_items)
-  ))
-}
-
-# Function to calculate all pairwise overlap rates
-calculate_all_overlaps <- function() {
-  # Get all item files
-  item_files <- list.files(paste0(DIRECTORY, "selected_items_", se_theta_stop), pattern="_items\\.csv$", full.names=TRUE)
-  
-  if(length(item_files) < 2) {
-    cat("Need at least 2 item sets to calculate overlap\n")
-    return(NULL)
-  }
-  
-  # Read all item sets
-  item_sets <- lapply(item_files, function(f) {
-    df <- read.csv(f)
-    return(df$item_id)
-  })
-  
-  # Get model names from filenames
-  model_names <- basename(item_files)
-  model_names <- sub("_items\\.csv$", "", model_names)
-  
-  # Calculate all pairwise overlaps
-  n_models <- length(item_sets)
-  overlap_matrix <- matrix(0, nrow=n_models, ncol=n_models)
-  
-  for(i in 1:(n_models-1)) {
-    for(j in (i+1):n_models) {
-      overlap <- calculate_overlap_rate(item_sets[[i]], item_sets[[j]])
-      overlap_matrix[i,j] <- overlap$overlap_rate
-      overlap_matrix[j,i] <- overlap$overlap_rate
-      
-      cat("Overlap between", model_names[i], "and", model_names[j], ":", 
-          round(overlap$overlap_rate * 100, 2), "%\n")
-      cat("  Common items:", overlap$n_common, "\n")
-    }
-  }
-  
-  # Set row and column names
-  rownames(overlap_matrix) <- model_names
-  colnames(overlap_matrix) <- model_names
-  
-  # Calculate average overlap rate
-  avg_overlap <- mean(overlap_matrix[upper.tri(overlap_matrix)])
-  cat("\nAverage overlap rate:", round(avg_overlap * 100, 2), "%\n")
-  
-  # Save overlap matrix to CSV
-  overlap_df <- as.data.frame(overlap_matrix)
-  write.csv(overlap_df, paste0(DIRECTORY, "item_overlap_matrix_", se_theta_stop, ".csv"))
-  cat("Overlap matrix saved to ", paste0(DIRECTORY, "item_overlap_matrix_", se_theta_stop, ".csv"), "\n")
-
-  
-  return(overlap_matrix)
-}
-
-# Call the function to calculate overlaps if selected items exist
-cat("\n---------- Item Overlap Analysis ----------\n")
-if(dir.exists(paste0(DIRECTORY, "selected_items_", se_theta_stop)) && 
-   length(list.files(paste0(DIRECTORY, "selected_items_", se_theta_stop), pattern="_items\\.csv$")) > 0) {
-  overlap_results <- calculate_all_overlaps()
-} else {
-  cat("No selected item files found in, ",paste0(DIRECTORY, "selected_items_", se_theta_stop), ". Run ATLAS first to generate item selection data.\n")
-  overlap_results <- NULL
-}
 
 ###########################################
 # Analyze item selection frequency
@@ -573,7 +492,7 @@ analyze_item_positions <- function() {
                 top_items$max_position[i]))
   }
   
-  cat("\nItem position analysis saved to ",paste0(DIRECTORY, "item_position_analysis_", se_theta_stop, ".csv\n"))
+  cat("\nItem position analysis saved to ", paste0(DIRECTORY, "item_position_analysis_", se_theta_stop, ".csv"), "\n")
   
   # Identify common initial items
   initial_items <- position_summary[position_summary$min_position == 1,]
@@ -600,134 +519,3 @@ if(dir.exists(paste0(DIRECTORY, "selected_items_", se_theta_stop)) &&
   cat("No selected item files found in, ",paste0(DIRECTORY, "selected_items_", se_theta_stop), ". Run ATLAS first to generate item selection data.\n")
   position_results <- NULL
 }
-
-###########################################
-# Generate comprehensive test overlap report
-###########################################
-
-generate_test_overlap_report <- function(se_theta_stop = NA) {
-  # Create report file name with timestamp
-  timestamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
-  report_filename <- paste0(DIRECTORY, "test_overlap_report_", se_theta_stop, "_", timestamp, ".txt")
-  
-  # Open report file
-  sink(report_filename)
-  
-  cat("=============================================\n")
-  cat("     COMPUTERIZED ADAPTIVE TESTING (ATLAS)    \n")
-  cat("           TEST OVERLAP ANALYSIS            \n")
-  cat("=============================================\n\n")
-  
-  cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n\n")
-  
-  if(!is.na(se_theta_stop)) {
-    cat("ATLAS stopping rule: SE(theta) ≤", se_theta_stop, "\n\n")
-  }
-  
-  # Get item files and model count
-  item_files <- list.files(paste0(DIRECTORY, "selected_items_", se_theta_stop), pattern="_items\\.csv$", full.names=TRUE)
-  model_count <- length(item_files)
-  
-  cat("Number of models analyzed:", model_count, "\n\n")
-  
-  if(model_count < 2) {
-    cat("Insufficient data for overlap analysis (at least 2 models required)\n")
-    sink()
-    return(report_filename)
-  }
-  
-  # Basic test statistics
-  all_item_counts <- numeric()
-  for(f in item_files) {
-    df <- read.csv(f)
-    all_item_counts <- c(all_item_counts, nrow(df))
-  }
-  
-  cat("Test length statistics:\n")
-  cat("  Mean number of items:   ", round(mean(all_item_counts), 2), "\n")
-  cat("  Median number of items: ", median(all_item_counts), "\n")
-  cat("  Min number of items:    ", min(all_item_counts), "\n")
-  cat("  Max number of items:    ", max(all_item_counts), "\n\n")
-  
-  # Overall overlap rate
-  if(file.exists(paste0(DIRECTORY, "item_overlap_matrix_", se_theta_stop, ".csv"))) {
-    overlap_matrix <- read.csv(paste0(DIRECTORY, "item_overlap_matrix_", se_theta_stop, ".csv"), row.names=1)
-    avg_overlap <- mean(as.matrix(overlap_matrix)[upper.tri(as.matrix(overlap_matrix))])
-    cat("Average test overlap rate: ", round(avg_overlap * 100, 2), "%\n\n")
-  }
-  
-  # Frequently used items
-  if(file.exists(paste0(DIRECTORY, "item_selection_frequency_", se_theta_stop, ".csv"))) {
-    item_freq <- read.csv(paste0(DIRECTORY, "item_selection_frequency_", se_theta_stop, ".csv"))
-    item_freq <- item_freq[order(-item_freq$frequency),]
-    
-    cat("Most frequently selected items:\n")
-    for(i in 1:min(10, nrow(item_freq))) {
-      cat(sprintf("  %s: %d models (%.1f%%)\n", 
-                  item_freq$item_id[i], 
-                  item_freq$frequency[i],
-                  item_freq$percentage[i]))
-    }
-    cat("\n")
-    
-    # Report items used in >50% of tests
-    high_freq_items <- item_freq[item_freq$percentage > 50,]
-    cat("Number of items used in >50% of tests: ", nrow(high_freq_items), "\n")
-    cat("Number of items used in >75% of tests: ", sum(item_freq$percentage > 75), "\n\n")
-  }
-  
-  # Common first items
-  if(file.exists(paste0(DIRECTORY, "item_position_analysis_", se_theta_stop, ".csv"))) {
-    position_data <- read.csv(paste0(DIRECTORY, "item_position_analysis_", se_theta_stop, ".csv"))
-    first_items <- position_data[position_data$min_position == 1,]
-    first_items <- first_items[order(-first_items$frequency),]
-    
-    cat("Common first items across tests:\n")
-    for(i in 1:min(5, nrow(first_items))) {
-      cat(sprintf("  %s: Used in %d models, avg position %.1f\n", 
-                  first_items$item_id[i], 
-                  first_items$frequency[i],
-                  first_items$mean_position[i]))
-    }
-    cat("\n")
-  }
-  
-  # Item bank utilization
-  if(exists("item_bank") && is.data.frame(item_bank)) {
-    total_items <- nrow(item_bank)
-    
-    if(file.exists(paste0(DIRECTORY, "item_selection_frequency_", se_theta_stop, ".csv"))) {
-      item_freq <- read.csv(paste0(DIRECTORY, "item_selection_frequency_", se_theta_stop, ".csv"))
-      used_items <- nrow(item_freq)
-      
-      cat("Item bank utilization:\n")
-      cat("  Total items in bank:   ", total_items, "\n")
-      cat("  Items used at least once:", used_items, "(")
-      cat(round(100 * used_items / total_items, 1), "%)\n")
-      cat("  Items never selected:  ", total_items - used_items, "(")
-      cat(round(100 * (total_items - used_items) / total_items, 1), "%)\n\n")
-    }
-  }
-  
-  cat("=============================================\n")
-  cat("              END OF REPORT                \n")
-  cat("=============================================\n")
-  
-  # Close report file
-  sink()
-  
-  cat("Test overlap report saved to", report_filename, "\n")
-  return(report_filename)
-}
-
-# Generate comprehensive report if selected items exist
-cat("\n---------- Generating Comprehensive Test Overlap Report ----------\n")
-if(dir.exists(paste0(DIRECTORY, "selected_items_", se_theta_stop)) && 
-   length(list.files(paste0(DIRECTORY, "selected_items_", se_theta_stop), pattern="_items\\.csv$")) > 0) {
-  overlap_report <- generate_test_overlap_report(se_theta_stop)
-} else {
-  cat("No selected item files found in, ",paste0(DIRECTORY, "selected_items_", se_theta_stop), ". Run ATLAS first to generate item selection data.\n")
-  overlap_report <- NULL
-}
-
-  
