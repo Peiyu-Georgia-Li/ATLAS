@@ -3,4 +3,5 @@ baseline/
 compare_model_pairs.py
 plot_model_avg_distribution.py
 select_models/
-
+*item_selection_frequency_*.csv
+*selected_items_*/
