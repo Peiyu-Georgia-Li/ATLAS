@@ -27,13 +27,23 @@ print(model)
 cat("====M2====\n")
 m2<-M2(model)
 print(m2)
-summary(model, rotate = "oblimin", suppress = 0.20)
+cat("\nTheta Scores:\n")
+theta_scores <- fscores(model, method = "EAP", full.scores = TRUE, full.scores.SE = TRUE, quadpts = 61)
+cat("\nItem Parameters:\n")
+item_params <- coef(model, simplify = TRUE)$items
+print(item_params)
+
+
+# # Save results to files
 
 path <- "./"
-if (!dir.exists(path)) dir.create(path)
 
+if (!dir.exists(path)) dir.create(path)
+output_scores_file <- paste0(path, "irt_person_scores_", index_name, ".csv")
 output_params_file <- paste0(path,"irt_item_parameters_", index_name, ".csv")
 output_m2_file<- paste0(path, "m2_", index_name, ".csv")
+write.csv(theta_scores, output_scores_file, row.names = FALSE)
 write.csv(item_params, output_params_file, row.names = TRUE)
 write.csv(m2, output_m2_file, row.names = TRUE)
+
 
