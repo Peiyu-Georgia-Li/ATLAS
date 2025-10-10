@@ -266,7 +266,7 @@ head(item_data$item_bank)
 dim(item_data$item_bank)
 ###########################################
 # CLEAN RESPONSE MATRIX
-clean_data <- read.csv("../data/clean_response_matrix_winogrande.csv")
+clean_data <- read.csv("../data/clean_response_matrix_hellaswag.csv")
 
 ###########################################
 # GET MODEL
