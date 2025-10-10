@@ -26,7 +26,7 @@ if (!is.null(.cli_args$se_theta_stop) && !is.na(.cli_args$se_theta_stop)) {
 
 # Prepare item bank
 # Read and prepare item bank
-DIRECTORY <- "atlas_winogrande_random_test/"
+DIRECTORY <- "atlas_truthfulqa_random/"
 FILE_PATH <- "irt_item_parameters_combined.csv"
 prepare_item_bank <- function(file_path) {
   # Read your CSV
