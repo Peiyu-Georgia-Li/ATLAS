@@ -242,6 +242,23 @@ python calculate_item_overlap.py --data_path=arc/atlas_arc_random --se_theta_sto
 
 ---
 
+## 🔧 Testing New Models
+
+### Customizing `score_response` Function
+
+To test a **new model not in your response matrix**, modify the `score_response` function in `atlas_random.r` (lines 86-108).
+
+**Function contract:**
+- **Input**: `model_name` (string), `item_id` (string)
+- **Output**: Binary score (0 = incorrect, 1 = correct)
+
+**Current behavior**: Reads model responses from `../data/clean_response_matrix_<benchmark>.csv` where rows are models and columns are item IDs.
+
+Modify this function to return scores from your custom source (e.g., API calls, cached responses, or a different data file).
+
+
+---
+
 ## 📈 Analysis & Metrics
 
 ATLAS automatically computes comprehensive metrics after adaptive testing:
