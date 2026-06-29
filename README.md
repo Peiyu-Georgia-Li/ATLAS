@@ -1,8 +1,27 @@
-# ATLAS: Adaptive Testing for LLM Ability Scoring
+# ATLAS: Adaptive Testing for LLM Evaluation
 
-[中文版](README_zh.md)
+<p align="center">
+  <a href="https://icml.cc/virtual/2026/poster/64880"><img src="https://img.shields.io/badge/ICML_2026-Spotlight-blue.svg" alt="ICML 2026 Spotlight"></a>
+  <a href="https://icml.cc/virtual/2026/poster/64880"><img src="https://img.shields.io/badge/Paper-ICML%202026-lightgrey.svg" alt="Paper"></a>
+  <a href="https://github.com/Peiyu-Georgia-Li/ATLAS"><img src="https://img.shields.io/github/stars/Peiyu-Georgia-Li/ATLAS?style=social" alt="GitHub Stars"></a>
+  <a href="README_zh.md"><img src="https://img.shields.io/badge/文档-中文版-red.svg" alt="中文版"></a>
+</p>
 
-ATLAS is a framework for evaluating large language models (LLMs) using **Item Response Theory (IRT)** and **Computerized Adaptive Testing (CAT)**. Instead of running every model on every benchmark item, ATLAS adaptively selects the most informative items for each model, achieving precise ability estimates with far fewer evaluations.
+> **TL;DR** — ATLAS replaces static LLM benchmarks with adaptive testing grounded in **Item Response Theory (IRT)**. It reduces the number of required evaluation items by up to **90%** — matching full HellaSwag results with just **41 out of 5,608 items** — while providing finer ability estimates (θ) that reveal ranking shifts for **23–31% of models** compared to standard accuracy metrics.
+
+---
+
+## Table of Contents
+
+- [How It Works](#how-it-works)
+- [Supported Benchmarks](#supported-benchmarks)
+- [Repository Structure](#repository-structure)
+- [Setup](#setup)
+- [Running the Pipeline](#running-the-pipeline)
+- [Output Files](#output-files)
+- [Reproducibility](#reproducibility)
+- [IRT Model](#irt-model)
+- [Citation](#citation)
 
 ---
 
@@ -266,3 +285,19 @@ $$P(X_{ij}=1 \mid \theta_j) = g_i + (1-g_i)\cdot\frac{1}{1+\exp(-(a_i\theta_j + 
 $$A = \frac{\text{sd}(\theta_\text{ref})}{\text{sd}(\theta_k)}, \quad B = \bar\theta_\text{ref} - A\bar\theta_k$$
 
 $$a_i^* = a_i/A, \quad d_i^* = A\cdot d_i + B\cdot a_i$$
+
+---
+
+## Citation
+
+If you find this work useful, please cite:
+
+```bibtex
+@inproceedings{li2026atlas,
+  title     = {Adaptive Testing for {LLM} Evaluation: A Psychometric Alternative to Static Benchmarks},
+  author    = {Li, Peiyu and Tang, Xiuxiu and Chen, Si and Cheng, Ying and Metoyer, Ronald and Hua, Ting and Chawla, Nitesh},
+  booktitle = {Proceedings of the International Conference on Machine Learning},
+  year      = {2026},
+  note      = {Spotlight}
+}
+```

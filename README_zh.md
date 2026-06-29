@@ -1,8 +1,27 @@
-# ATLAS：大语言模型能力自适应测评框架
+# ATLAS：大语言模型自适应评测框架
 
-[English](README.md)
+<p align="center">
+  <a href="https://icml.cc/virtual/2026/poster/64880"><img src="https://img.shields.io/badge/ICML_2026-Spotlight-blue.svg" alt="ICML 2026 Spotlight"></a>
+  <a href="https://icml.cc/virtual/2026/poster/64880"><img src="https://img.shields.io/badge/论文-ICML%202026-lightgrey.svg" alt="论文"></a>
+  <a href="https://github.com/Peiyu-Georgia-Li/ATLAS"><img src="https://img.shields.io/github/stars/Peiyu-Georgia-Li/ATLAS?style=social" alt="GitHub Stars"></a>
+  <a href="README.md"><img src="https://img.shields.io/badge/Docs-English-blue.svg" alt="English"></a>
+</p>
 
-ATLAS 是一个基于**项目反应理论（IRT）**和**计算机化自适应测试（CAT）**的大语言模型评估框架。与传统基准评测需要对每个模型运行全量题目不同，ATLAS 为每个模型动态选择信息量最大的题目，以大幅更少的评测次数获得精准的能力估计。
+> **TL;DR** — ATLAS 以**项目反应理论（IRT）**为基础，将静态基准测评替换为自适应测试。测评所需题目数量最多减少 **90%** —— 在 HellaSwag 仅用 **41 道题（共 5,608 道）**即可匹配全量结果 —— 同时提供更细粒度的能力值（θ）估计，发现 **23–31% 的模型**在排名上与传统准确率指标存在显著偏移。
+
+---
+
+## 目录
+
+- [工作原理](#工作原理)
+- [支持的基准](#支持的基准)
+- [目录结构](#目录结构)
+- [环境配置](#环境配置)
+- [运行流程](#运行流程)
+- [输出文件说明](#输出文件说明)
+- [可复现性说明](#可复现性说明)
+- [IRT 模型说明](#irt-模型说明)
+- [引用](#引用)
 
 ---
 
@@ -266,3 +285,19 @@ $$P(X_{ij}=1 \mid \theta_j) = g_i + (1-g_i)\cdot\frac{1}{1+\exp(-(a_i\theta_j + 
 $$A = \frac{\text{sd}(\theta_\text{ref})}{\text{sd}(\theta_k)}, \quad B = \bar\theta_\text{ref} - A\bar\theta_k$$
 
 $$a_i^* = a_i/A, \quad d_i^* = A\cdot d_i + B\cdot a_i$$
+
+---
+
+## 引用
+
+如果本工作对您有帮助，请引用：
+
+```bibtex
+@inproceedings{li2026atlas,
+  title     = {Adaptive Testing for {LLM} Evaluation: A Psychometric Alternative to Static Benchmarks},
+  author    = {Li, Peiyu and Tang, Xiuxiu and Chen, Si and Cheng, Ying and Metoyer, Ronald and Hua, Ting and Chawla, Nitesh},
+  booktitle = {Proceedings of the International Conference on Machine Learning},
+  year      = {2026},
+  note      = {Spotlight}
+}
+```
