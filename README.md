@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://icml.cc/virtual/2026/poster/64880"><img src="https://img.shields.io/badge/ICML_2026-Spotlight-blue.svg" alt="ICML 2026 Spotlight"></a>
-  <a href="https://icml.cc/virtual/2026/poster/64880"><img src="https://img.shields.io/badge/Paper-ICML%202026-lightgrey.svg" alt="Paper"></a>
+  <a href="https://arxiv.org/abs/2511.04689"><img src="https://img.shields.io/badge/arXiv-2511.04689-b31b1b.svg" alt="arXiv"></a>
   <a href="https://github.com/Peiyu-Georgia-Li/ATLAS"><img src="https://img.shields.io/github/stars/Peiyu-Georgia-Li/ATLAS?style=social" alt="GitHub Stars"></a>
   <a href="README_zh.md"><img src="https://img.shields.io/badge/文档-中文版-red.svg" alt="中文版"></a>
 </p>
@@ -298,6 +298,8 @@ If you find this work useful, please cite:
   author    = {Li, Peiyu and Tang, Xiuxiu and Chen, Si and Cheng, Ying and Metoyer, Ronald and Hua, Ting and Chawla, Nitesh},
   booktitle = {Proceedings of the International Conference on Machine Learning},
   year      = {2026},
-  note      = {Spotlight}
+  note      = {Spotlight},
+  eprint    = {2511.04689},
+  archivePrefix = {arXiv}
 }
 ```
