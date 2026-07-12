@@ -293,13 +293,11 @@ $$a_i^* = a_i/A, \quad d_i^* = A\cdot d_i + B\cdot a_i$$
 If you find this work useful, please cite:
 
 ```bibtex
-@inproceedings{li2026atlas,
-  title     = {Adaptive Testing for {LLM} Evaluation: A Psychometric Alternative to Static Benchmarks},
-  author    = {Li, Peiyu and Tang, Xiuxiu and Chen, Si and Cheng, Ying and Metoyer, Ronald and Hua, Ting and Chawla, Nitesh},
-  booktitle = {Proceedings of the International Conference on Machine Learning},
-  year      = {2026},
-  note      = {Spotlight},
-  eprint    = {2511.04689},
-  archivePrefix = {arXiv}
+@inproceedings{
+li2026adaptive,
+title={Adaptive Testing for {LLM} Evaluation: A Psychometric Alternative to Static Benchmarks},
+author={Peiyu Li and Xiuxiu Tang and Si Chen and Ying Cheng and Ronald Metoyer and Ting Hua and Nitesh V Chawla},
+booktitle={Forty-third International Conference on Machine Learning},
+year={2026}
 }
 ```
